@@ -1,0 +1,148 @@
+<html>
+<head>
+<meta charset="utf8">
+<title>COSCUP 2021 Youtube Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-31YHH3NR86"></script>
+<script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-31YHH3NR86');
+        </script>
+<style>
+            body {
+                width: 100%;
+                background-color: #000;
+                color: #FFFFFF;
+            }
+            .container {
+                width: 100%;
+                padding: 0px;
+                margin: 0px;
+            }
+            .col {
+                padding: 0px;
+                align-items: center;
+                justify-content: center;
+            }
+            .msg {
+                text-align:center;
+                font-size: 40px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            }
+            .label {
+                text-align: center;
+            }
+        </style>
+<script>
+            var config = {
+                row: 4,
+                col: 4,
+                msg: [
+                    'COSCUP 2021<br>YouTube Dashboard<br>By 胖胖',
+                ],
+            }
+
+            var blocked_room = ["TR412-1", "TR413-2"];
+
+            $(document).ready(function(){
+                onload();
+                setInterval(refreshMessage, "5000");
+                setInterval(loadMessage, "10000");
+                setInterval(loadViewerCounter, "1000");
+            });
+
+            $(window).resize(function(){
+                console.log("resize")
+                resize();
+            });
+
+            function resize() {
+                var iframeWidth = window.innerWidth / config.col
+                var iframeHeight = window.innerHeight / config.row
+                var labelHeight = $('.label').height();
+                $("iframe").width(iframeWidth);
+                $("iframe").height(iframeHeight-labelHeight);
+                $(".msg").width(iframeWidth);
+                $(".msg").height(iframeHeight);
+            }
+
+            function onload() {
+                $.getJSON("https://coscup.org/2021/json/ytLink.json", function(data){
+                    for (var i = 0; i < blocked_room.length; i++){
+                        var room_name = blocked_room[i]
+                        delete data[room_name];
+                    }
+
+                    var rooms_name = Object.keys(data)
+                    var yt_num = 0;
+
+                    for (var i = 0; i < config.row; i++) {
+                        var row = $("<div>").addClass("row");
+                        for (var j = 0; j < config.col; j++) {
+                            var col = $("<div>").addClass("col");
+
+                            var room_name = rooms_name[yt_num]
+                            var url = data[room_name]
+                            var iframe = make_iframe(room_name, url)
+                            col = col.append(iframe)
+
+                            yt_num++;
+                            row.append(col);
+                        }
+                        $("#container").append(row);
+                    }
+                    resize();
+                    loadMessage();
+                    loadViewerCounter();
+                });
+            }
+
+            function make_iframe(name, url, count) {
+                if (url) {
+                    return '<div class="label">' + name + ' <span id="title_' + url + '" class="badge badge-info"></span></div><iframe src="https://www.youtube.com/embed/' + url + '?controls=0&autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                } else {
+                    return '<div class="msg">' + getRandomMessage() + '</div>';
+                }
+            }
+
+            function getRandomMessage() {
+                var idx = Math.floor(Math.random() * config.msg.length);
+                return config.msg[idx]
+            }
+
+            function refreshMessage() {
+                $(".msg").each(function(idx, element){
+                    $(element).fadeOut(400, function(){
+                        $(element).html(getRandomMessage()).fadeIn(400);
+                    })
+                })
+            }
+
+            function loadMessage() {
+                $.getJSON('message.json', function(data){
+                    config.msg = data;
+                });
+            }
+
+            function loadViewerCounter() {
+                $.getJSON('viewer_count.json', function(data){
+                    $.each(data, function(video_id, counter){
+                        console.log(video_id)
+                        console.log(counter)
+                        $("#title_" + video_id).text(counter);
+                    })
+                });
+            }
+        </script>
+</head>
+<body>
+<div class="container-fluid" id="container"></div>
+</body>
+</html>
