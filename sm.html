@@ -19,6 +19,13 @@
 -->
 <head>
 <title>Screen message</title>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PFRC8PN');</script>
+<!-- End Google Tag Manager -->
 <style type="text/css">
 #textarea {
 	position:absolute;
@@ -72,7 +79,7 @@ opacity = 100;
 function adjust() {
 	ta = document.getElementById("textarea");
 	test = document.getElementById("test");
-	
+
 	test.textContent=ta.value;
 	// Otherwise, the newline would not be counted.
 	if (ta.value[ta.value.length-1] == "\n") {
@@ -93,9 +100,9 @@ function adjust() {
 	//ta.style.width = newWidth + "px";
 	ta.style.paddingLeft = Math.max(0,Math.floor((window.innerWidth - newWidth)/2)) + "px";
 	ta.style.paddingRight = Math.max(0,Math.floor((window.innerWidth - newWidth)/2)) + "px";
-	 
+
 	//test.innerHTML = newHeight + " " + window.innerHeight + " " + fontSize;
-	
+
 	href =  "#t=" + encodeURIComponent(ta.value);
 	if (ta.style.color) {
 		href +=  ";f=" + encodeURIComponent(ta.style.color);
@@ -148,7 +155,7 @@ function parseHash() {
 	timeout = window.setTimeout("fadeOut();",1000);
 	setOpacity();
 }
-	
+
 function init() {
 	if (window.navigator.mozApps) {
 		document.getElementById("firefox").style.display = "block";
@@ -161,6 +168,10 @@ function init() {
 <meta name="format-detection" content="telephone=no">
 </head>
 <body onload="init()" onhashchange="parseHash()" onresize="adjust()">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PFRC8PN"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <textarea id="textarea" onKeyUp="adjust()" onpaste="adjust()" oninput="adjust()">:-)</textarea>
 <span id="test"></span>
 <div id="about" onMouseOver="showBox()" onMouseOut="fadeOut()">
